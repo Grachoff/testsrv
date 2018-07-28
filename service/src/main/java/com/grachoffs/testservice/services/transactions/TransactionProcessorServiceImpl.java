@@ -104,7 +104,7 @@ public class TransactionProcessorServiceImpl extends BaseService implements Tran
     }
 
     private void writeQueueToDisk(BlockingQueue<TransactionDto> queue) {
-        log.info("Writing queue ti disk!");
+        log.info("Writing queue to disk!");
         try (FileOutputStream fout = new FileOutputStream(FAILSAFE_FILE_NAME)) {
             ObjectOutputStream oos = new ObjectOutputStream(fout);
             oos.writeObject(queue);
