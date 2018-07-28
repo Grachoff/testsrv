@@ -90,12 +90,17 @@ public class TransactionProcessorServiceImpl extends BaseService implements Tran
     public void waitForQueue() {
         log.info("Stopping workers...");
         try {
-            while (queue.size()>0) Thread.sleep(33L);
+            int counter = 1000;
+            while (queue.size()>0 && counter > 0) {
+                Thread.sleep(33L);
+                counter--;
+            }
         } catch (InterruptedException e) {
             isInterrupted.set(true);
             log.error("Abnormal worker termination!");
-            writeQueueToDisk(queue);
         }
+        if (queue.size()>0) writeQueueToDisk(queue);
+
     }
 
     private void writeQueueToDisk(BlockingQueue<TransactionDto> queue) {
