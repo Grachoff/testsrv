@@ -12,19 +12,20 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @Slf4j
 public class ControllerRequestInterceptor implements HandlerInterceptor {
-    private boolean restApiDisabled = false;
+    private AtomicBoolean restApiDisabled = new AtomicBoolean(false);
     @PreDestroy
     public void preDestroy() {
         log.info("Stopping rest controllers...");
-        restApiDisabled = true;
+        restApiDisabled.set(true);
     }
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (restApiDisabled) {
+        if (restApiDisabled.get()) {
             response.setStatus(HttpStatus.I_AM_A_TEAPOT.value());
             RestResult restResult = new RestResult(RestResultEnum.SERVICE_DISABLED, "Service disabled, please come back later.");
             ObjectMapper jsonMapper = new ObjectMapper();
