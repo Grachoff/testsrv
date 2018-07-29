@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -22,5 +23,5 @@ public class TransactionDto extends BaseDto {
     private String customer;
     @Size(min = 1, message = "products required")
     @Valid
-    private List<ProductForTransactionDto> products;
+    private List<@NotNull ProductForTransactionDto> products;
 }

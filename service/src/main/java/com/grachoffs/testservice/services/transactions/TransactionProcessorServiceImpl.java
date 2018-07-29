@@ -24,6 +24,7 @@ public class TransactionProcessorServiceImpl extends BaseService implements Tran
     private final AtomicBoolean isInterrupted = new AtomicBoolean(false);
     private final BlockingQueue<TransactionDto> queue;
     private final TransactionService transactionService;
+    private final ExecutorService executorService;
 
     public TransactionProcessorServiceImpl(
             @Value("${app.queueSize}") int queueSize,
@@ -36,7 +37,7 @@ public class TransactionProcessorServiceImpl extends BaseService implements Tran
         this.PACKET_SIZE = packetSize;
         this.transactionService = transactionService;
         this.FAILSAFE_FILE_NAME = failsafeFileName;
-
+        this.executorService = executorService;
         this.queue = createQueue(queueSize);
         for (int i=0; i< workersCount; i++) executorService.submit(this::worker);
     }
@@ -100,7 +101,7 @@ public class TransactionProcessorServiceImpl extends BaseService implements Tran
             log.error("Abnormal worker termination!");
         }
         if (queue.size()>0) writeQueueToDisk(queue);
-
+        executorService.shutdown();
     }
 
     private void writeQueueToDisk(BlockingQueue<TransactionDto> queue) {
@@ -112,5 +113,4 @@ public class TransactionProcessorServiceImpl extends BaseService implements Tran
             log.error("Error writing to file", e);
         }
     }
-
 }
